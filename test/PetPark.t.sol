@@ -7,7 +7,7 @@ import "../src/PetPark.sol";
 
 contract PetParkTest is Test, PetPark {
     PetPark petPark;
-    
+
     address testOwnerAccount;
 
     address testPrimaryAccount;
@@ -27,7 +27,9 @@ contract PetParkTest is Test, PetPark {
 
     function testCannotAddAnimalWhenNonOwner() public {
         // 1. Complete this test and remove the assert line below
-        assert(false);
+        vm.expectRevert("Ownable: caller is not the owner");
+        vm.prank(testPrimaryAccount);
+        petPark.add(AnimalType.None, 5);
     }
 
     function testCannotAddInvalidAnimal() public {
@@ -43,8 +45,8 @@ contract PetParkTest is Test, PetPark {
     }
 
     function testCannotBorrowWhenAgeZero() public {
-        // 2. Complete this test and remove the assert line below
-        assert(false);
+        vm.expectRevert("Age cannot be zero");
+        petPark.borrow(0, Gender.Female, AnimalType.Cat);
     }
 
     function testCannotBorrowUnavailableAnimal() public {
@@ -127,8 +129,14 @@ contract PetParkTest is Test, PetPark {
     }
 
     function testBorrowCountDecrement() public {
-        // 3. Complete this test and remove the assert line below
-        assert(false);
+        uint256 initialCount = 5;
+
+        petPark.add(AnimalType.Fish, initialCount);
+        petPark.borrow(24, Gender.Male, AnimalType.Fish);
+
+        uint256 reducedPetCount = petPark.animalCounts(AnimalType.Fish);
+        
+        assertEq(reducedPetCount, initialCount - 1);
     }
 
     function testCannotGiveBack() public {
